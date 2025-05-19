@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/captainhbb/movieexample-rating/pkg/model"
+	"movieexample-rating/pkg/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -17,13 +17,12 @@ type Repository struct {
 }
 
 func New() (*Repository, error) {
-	user := os.Getenv("DB_USER")
-    password := os.Getenv("DB_PASSWORD")
-    host := os.Getenv("DB_HOST")
-    port := os.Getenv("DB_PORT")
-    dbName := os.Getenv("DB_NAME")
+	user := os.Getenv("MYSQL_USER")
+    password := os.Getenv("MYSQL_PASSWORD")
+    dburl := os.Getenv("DATABASE_URL")
+    dbName := os.Getenv("MYSQL_DATABASE")
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, dbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, dburl, dbName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")

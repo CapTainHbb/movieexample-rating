@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/captainhbb/movieexample-rating/pkg/model"
+	"movieexample-rating/pkg/model"
 	"os"
 	"time"
 )

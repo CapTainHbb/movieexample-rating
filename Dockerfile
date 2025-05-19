@@ -1,14 +1,19 @@
 # Start from the official Go image
-FROM golang:1.24.2-alpine
+FROM golang:1.24.2
 
-RUN apk add --no-cache git ca-certificates
+RUN apt-get update && apt-get install -y \
+    git \
+    ca-certificates \
+    curl \
+    build-essential \
+    librdkafka-dev
+
 
 # Set environment variables
 ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
+    CGO_ENABLED=1 \
     GOOS=linux \
     GOARCH=amd64 
-    # GOPROXY=direct
 
 # Create app directory
 WORKDIR /app
@@ -23,7 +28,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o main ./cmd/main.go
+RUN go build -o main ./cmd
 
 # Command to run the executable
 CMD ["./main"]

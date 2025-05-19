@@ -3,7 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
-	"github.com/captainhbb/movieexample-rating/pkg/model"
+	"movieexample-rating/pkg/model"
 )
 
 type ratingIngester interface {

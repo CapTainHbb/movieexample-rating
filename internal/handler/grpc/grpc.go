@@ -7,16 +7,16 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"github.com/captainhbb/movieexample-protoapis/gen"
-	"github.com/captainhbb/movieexample-rating/internal/controller/rating"
-	"github.com/captainhbb/movieexample-rating/pkg/model"
+	"movieexample-rating/internal/controller"
+	"movieexample-rating/pkg/model"
 )
 
 type Handler struct {
 	gen.UnimplementedRatingServiceServer
-	ctrl *rating.Controller
+	ctrl *controller.Controller
 }
 
-func New(ctrl *rating.Controller) *Handler {
+func New(ctrl *controller.Controller) *Handler {
 	return &Handler{ctrl: ctrl}
 }
 
@@ -26,7 +26,7 @@ func (h *Handler) GetAggregatedRating(ctx context.Context, req *gen.GetAggregate
 	}
 
 	v, err := h.ctrl.GetAggregatedRating(ctx, model.RecordID(req.RecordId), model.RecordType(req.RecordType))
-	if err != nil && errors.Is(err, rating.ErrNotFound) {
+	if err != nil && errors.Is(err, controller.ErrNotFound) {
 		return nil, status.Errorf(codes.NotFound, err.Error())
 	} else if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())

@@ -4,18 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	kafkarepo "github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
-	"github.com/captainhbb/movieexample-rating/pkg/model"
+	"movieexample-rating/pkg/model"
 )
 
 type Ingester struct {
-	consumer *kafka.Consumer
+	consumer *kafkarepo.Consumer
 	topic    string
 }
 
 func NewIngester(addr string, groupID string, topic string) (*Ingester, error) {
-	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
+	consumer, err := kafkarepo.NewConsumer(&kafkarepo.ConfigMap{
 		"bootstrap.servers": addr,
 		"group.id":          groupID,
 		"auto.offset.reset": "earliest",
