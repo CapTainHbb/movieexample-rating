@@ -8,15 +8,18 @@ import (
 	"os"
 	"time"
 
-	"github.com/captainhbb/movieexample-protoapis/gen"
+	"google.golang.org/grpc/reflection"
+	"github.com/captainhbb/movieexample-rating/internal/controller"
+	"github.com/captainhbb/movieexample-rating/internal/ingester/kafka"
+	"github.com/captainhbb/movieexample-rating/internal/repository/mysql"
+
 	"google.golang.org/grpc"
 	"gopkg.in/yaml.v2"
-
-	"github.com/captainhbb/movieexample-discovery/pkg/discovery/consul"
+	"github.com/captainhbb/movieexample-protoapis/gen"
 	"github.com/captainhbb/movieexample-discovery/pkg/discovery"
-	"github.com/captainhbb/movieexample-rating/internal/controller/rating"
+	"github.com/captainhbb/movieexample-discovery/pkg/discovery/consul"
+
 	grpchandler "github.com/captainhbb/movieexample-rating/internal/handler/grpc"
-	"github.com/captainhbb/movieexample-rating/internal/repository/mysql"
 )
 
 const serviceName = "rating"
@@ -62,9 +65,20 @@ func main() {
 	log.Printf("Starting the rating service, listening on %v\n", cfg.APIConfig.Port)
 	repo, err := mysql.New()
 	if err != nil {
-		panic("can't initialize mysql db object")
+		panic(err)
 	}
-	ctrl := rating.New(repo)
+
+	ingester, err := kafka.NewIngester("localhost", "rating", "ratings")
+	if err != nil {
+		log.Fatalf("failed to initialize ingester: %v", err)
+	}
+
+	ctrl := controller.New(repo, ingester)
+	err = ctrl.StartIngestion(ctx)
+	if err != nil {
+		log.Fatalf("failed to start ingestion: %v", err)
+	}
+
 	h := grpchandler.New(ctrl)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", cfg.APIConfig.Port))
@@ -73,6 +87,9 @@ func main() {
 	}
 
 	srv := grpc.NewServer()
+	reflection.Register(srv)
 	gen.RegisterRatingServiceServer(srv, h)
-	srv.Serve(lis)
+	if err := srv.Serve(lis); err != nil {
+		panic(err)
+	}
 }

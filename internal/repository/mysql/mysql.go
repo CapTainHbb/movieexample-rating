@@ -51,5 +51,12 @@ func (r *Repository) Get(ctx context.Context, recordID model.RecordID, recordTyp
 }
 
 func (r *Repository) Put(ctx context.Context, recordID model.RecordID, recordType model.RecordType, rating *model.Rating) error {
-
+	ratingToSave := model.Rating{
+		RecordType: string(recordType),
+		RecordID: string(recordID),
+		UserID: rating.UserID,
+		Value: rating.Value,
+	}
+	result := r.db.Create(&ratingToSave)
+	return result.Error
 }

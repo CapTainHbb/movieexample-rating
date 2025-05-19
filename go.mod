@@ -1,4 +1,4 @@
-module github.com/captainhbb/movieexample-rating
+module movieexample-rating
 
 go 1.24.2
 
@@ -17,6 +17,7 @@ require (
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/captainhbb/movieexample-discovery v0.0.0-20250517100654-6c791d0bc2c4 // indirect
 	github.com/captainhbb/movieexample-protoapis v0.0.0-20250517095356-06db9d3c5524 // indirect
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/hashicorp/consul/api v1.32.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect

@@ -1,13 +1,14 @@
-package rating
+package controller
 
 import (
 	"context"
 	"errors"
-	"github.com/captainhbb/movieexample-rating/internal/controller"
 	"github.com/captainhbb/movieexample-rating/pkg/model"
 )
 
-var ErrNotFound = errors.New("ratings not found for a record")
+type ratingIngester interface {
+	Ingest(ctx context.Context) (chan model.RatingEvent, error)
+}
 
 type ratingRepository interface {
 	Get(ctx context.Context, recordID model.RecordID, recordType model.RecordType) ([]model.Rating, error)
@@ -16,16 +17,31 @@ type ratingRepository interface {
 
 type Controller struct {
 	repo ratingRepository
+	ingester ratingIngester
 }
 
-func New(repo ratingRepository) *Controller {
-	return &Controller{repo}
+func New(repo ratingRepository, ingester ratingIngester) *Controller {
+	return &Controller{repo, ingester}
+}
+
+func (s *Controller) StartIngestion(ctx context.Context) error {
+	ch, err := s.ingester.Ingest(ctx)
+	if err != nil {
+		return err
+	}
+	for e := range ch {
+		if err := s.PutRating(ctx, e.RecordID, model.RecordType(e.RecordType),
+		&model.Rating{UserID: e.UserID, Value: e.Value}); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GetAggregatedRating returns the aggregated rating for a record or ErrNotFound if there are no ratings for it.
 func (r *Controller) GetAggregatedRating(ctx context.Context, recordID model.RecordID, recordType model.RecordType) (float64, error) {
 	ratings, err := r.repo.Get(ctx, recordID, recordType)
-	if err != nil && !errors.Is(err, controller.ErrNotFound) {
+	if err != nil && !errors.Is(err, ErrNotFound) {
 		return 0, ErrNotFound
 	} else if err != nil {
 		return 0, err
