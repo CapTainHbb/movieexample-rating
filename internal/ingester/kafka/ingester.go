@@ -6,7 +6,7 @@ import (
 	"fmt"
 	kafkarepo "github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
-	"movieexample-rating/pkg/model"
+	"github.com/captainhbb/movieexample-rating/pkg/model"
 )
 
 type Ingester struct {

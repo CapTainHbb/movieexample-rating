@@ -1,4 +1,4 @@
-module movieexample-rating
+module github.com/captainhbb/movieexample-rating
 
 go 1.24.2
 

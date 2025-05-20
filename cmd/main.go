@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	"movieexample-rating/internal/controller"
-	"movieexample-rating/internal/ingester/kafka"
-	"movieexample-rating/internal/repository/mysql"
+	"github.com/captainhbb/movieexample-rating/internal/controller"
+	"github.com/captainhbb/movieexample-rating/internal/ingester/kafka"
+	"github.com/captainhbb/movieexample-rating/internal/repository/mysql"
 	"google.golang.org/grpc/reflection"
 
 	"github.com/captainhbb/movieexample-discovery/pkg/discovery"
@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc"
 	"gopkg.in/yaml.v2"
 
-	grpchandler "movieexample-rating/internal/handler/grpc"
+	grpchandler "github.com/captainhbb/movieexample-rating/internal/handler/grpc"
 )
 
 const serviceName = "rating"
